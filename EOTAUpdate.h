@@ -49,7 +49,8 @@ public:
     EOTAUpdate(
         const String &url,
         const unsigned currentVersion,
-        const unsigned long updateIntervalMs    = UPDATE_INTERVAL_MS);
+        const unsigned long updateIntervalMs    = UPDATE_INTERVAL_MS,
+        const String userAgent = "ESP32HTTPClient");
 
     /**
      * @brief Check for an update and, if available, fetch it and flash it.
@@ -75,6 +76,7 @@ private:
     const unsigned _currentVersion;
     const unsigned long _updateIntervalMs;
     unsigned long _lastUpdateMs;
+    String _userAgent;
 };
 
 #endif // UPDATE_CHECKER

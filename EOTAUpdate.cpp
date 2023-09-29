@@ -8,13 +8,15 @@
 EOTAUpdate::EOTAUpdate(
     const String &url,
     const unsigned currentVersion,
-    const unsigned long updateIntervalMs)
+    const unsigned long updateIntervalMs,
+    const String userAgent)
     :
     _url(url),
     _forceSSL(url.startsWith("https://")),
     _currentVersion(currentVersion),
     _updateIntervalMs(updateIntervalMs),
-    _lastUpdateMs(0)
+    _lastUpdateMs(0),
+    _userAgent(userAgent)
 {
 }
 
@@ -24,12 +26,6 @@ bool EOTAUpdate::CheckAndUpdate(bool force)
     const bool lastCheckIsRecent = (millis() - _lastUpdateMs < _updateIntervalMs);
     if (!force && hasEverChecked && lastCheckIsRecent)
     {
-        return false;
-    }
-
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        log_e("Wifi not connected");
         return false;
     }
 
@@ -75,6 +71,8 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
         log_e("Error initializing client");
         return false;
     }
+    
+    httpClient.setUserAgent(_userAgent);
 
     const char *headerKeys[] = {"Location"};
     httpClient.collectHeaders(headerKeys, 1);
@@ -155,7 +153,7 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
         log_e("Error initializing client");
         return false;
     }
-
+    httpClient.setUserAgent(_userAgent);
     const auto httpCode = httpClient.GET();
     if (httpCode != HTTP_CODE_OK)
     {
