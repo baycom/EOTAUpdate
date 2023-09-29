@@ -2,8 +2,6 @@
 #include <MD5Builder.h>
 #include <StreamString.h>
 #include <Update.h>
-#include <WiFi.h>
-#include <WiFiClient.h>
 
 #include <EOTAUpdate.h>
 
@@ -72,7 +70,6 @@ bool EOTAUpdate::GetUpdateFWURL(String &binURL, String &binMD5, const String &ur
     }
 
     HTTPClient httpClient;
-    auto client = WiFiClient();
     if (!httpClient.begin(url))
     {
         log_e("Error initializing client");
@@ -149,12 +146,6 @@ bool EOTAUpdate::PerformOTA(String &binURL, String &binMD5)
     if (_forceSSL && !isSSL)
     {
         log_e("Trying to access a non-ssl URL on a secure update checker");
-        return false;
-    }
-
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        log_d("Wifi not connected");
         return false;
     }
 
